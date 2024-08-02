@@ -6,8 +6,12 @@ public class BlockCon : MonoBehaviour
     GameObject grid;
     GameObject blockHolder;
 
-    public List<GameObject> blockLst;   
+    public BlockData blockData;
+
+
+    public GameObject nextBlock = null;
     public GameObject curBlock = null;
+
     public Vector3 spawnPosition;
     public Quaternion spawnRotation;
 
@@ -20,7 +24,9 @@ public class BlockCon : MonoBehaviour
         blockHolder = GameObject.Find("BlockHolder");
         previousTime = Time.time;
 
+        nextBlock = null;
         curBlock = null;
+
         spawnPosition = new Vector3(4, 17, 0);
         spawnRotation = Quaternion.identity;
         SpawnBlock();
@@ -52,16 +58,45 @@ public class BlockCon : MonoBehaviour
 
     void SpawnBlock()
     {
-        if(curBlock)
+        if (nextBlock == null)
         {
-            Destroy(curBlock);
+            CreateNextBlock();
         }
 
-        int idx = Random.Range(0, blockLst.Count);
-        curBlock = Instantiate(blockLst[idx], spawnPosition, spawnRotation);
-        curBlock.transform.SetParent(blockHolder.transform);
-
+        curBlock = nextBlock;
+        curBlock.transform.position = spawnPosition;
+        curBlock.transform.rotation = spawnRotation;
         curBlock.name = "CurBlock";
+
+        CreateNextBlock();
+    }
+
+    void CreateNextBlock()
+    {
+        if (blockData != null)
+        {
+            blockData.InitRandomBlockData();
+
+            nextBlock = Instantiate(blockData.Shape, spawnPosition, spawnRotation);
+
+            
+            int cnt = nextBlock.transform.childCount;
+            for (int i = cnt - 1; i >= 0; i--)
+            {
+                Transform child = nextBlock.transform.GetChild(i);
+                child.GetComponent<SpriteRenderer>().color = blockData.RandomColor;
+            }
+
+            //UI
+            //nextBlock.GetComponent<SpriteRenderer>().sprite = blockData.BlockSprite;
+
+            nextBlock.transform.SetParent(blockHolder.transform);
+            nextBlock.name = "NextBlock";
+        }
+        else
+        {
+            Debug.LogError("BlockData is null.");
+        }
     }
 
 

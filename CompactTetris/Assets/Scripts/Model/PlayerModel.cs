@@ -17,7 +17,7 @@ public class PlayerModel
     {
         isEnd = true;
         userId = Environment.UserName;
-        time = 60;
+        time = 100;
         score = 0;
     }
 
