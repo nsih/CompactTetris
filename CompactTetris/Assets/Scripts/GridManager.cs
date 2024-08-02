@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
 
 public class GridManager : MonoBehaviour
 {
@@ -8,6 +10,15 @@ public class GridManager : MonoBehaviour
     public static int height = 20;
 
     public static Transform[,] grid = new Transform[width, height];
+
+    PlayerModel playerModel;
+
+
+    void Start()
+    {
+        playerModel = GameManager.Instance.PlayerModel;
+    }
+
 
 
     public void InitializeGrid()
@@ -98,14 +109,26 @@ public class GridManager : MonoBehaviour
 
     public void DeleteFullRows()
     {
+        int baseScore = 100;
+        int exp = 1; 
+
+        int currentScore = 0;
+
         for (int y = 0; y < height; y++)
         {
             if (IsRowFull(y))
             {
+                currentScore = baseScore * exp;
+                
                 DeleteRow(y);
                 DecreaseRowsAbove(y + 1);
                 y--;
+
+                playerModel.AddScore(currentScore);
+
+                exp *= 2;
             }
         }
+        
     }
 }

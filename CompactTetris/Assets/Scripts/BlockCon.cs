@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class BlockManager : MonoBehaviour
+public class BlockCon : MonoBehaviour
 {
     GameObject grid;
     GameObject blockHolder;
@@ -11,8 +11,8 @@ public class BlockManager : MonoBehaviour
     public Vector3 spawnPosition;
     public Quaternion spawnRotation;
 
-    private float fallTime = 1.0f; // 블록이 떨어지는 시간 간격
-    private float previousTime; // 이전 시간
+    private float fallTime = 1.0f;
+    private float previousTime;
 
     void Start()
     {
@@ -28,26 +28,22 @@ public class BlockManager : MonoBehaviour
 
     private void Update()
     {
-        // 아래 방향키를 누를 때 더 빠르게 떨어지도록 설정
         if (Time.time - previousTime > (Input.GetKey(KeyCode.DownArrow) ? fallTime / 10 : fallTime))
         {
             MoveDown();
             previousTime = Time.time;
         }
 
-        // 왼쪽 방향키
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             Move(Vector3.left);
         }
 
-        // 오른쪽 방향키
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             Move(Vector3.right);
         }
 
-        // 위 방향키 (회전)
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             Rotate();
@@ -88,7 +84,7 @@ public class BlockManager : MonoBehaviour
             curBlock.transform.position -= Vector3.down;
             FixToGrid();
             //enabled = false;
-            grid.GetComponent<GridManager>().DeleteFullRows(); // 가득 찬 행 삭제
+            grid.GetComponent<GridManager>().DeleteFullRows();
             SpawnBlock();
         }
     }
