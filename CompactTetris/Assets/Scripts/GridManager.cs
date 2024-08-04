@@ -11,12 +11,9 @@ public class GridManager : MonoBehaviour
 
     public static Transform[,] grid = new Transform[width, height];
 
-    PlayerModel playerModel;
-
 
     void Start()
     {
-        playerModel = GameManager.Instance.PlayerModel;
     }
 
 
@@ -124,7 +121,7 @@ public class GridManager : MonoBehaviour
                 DecreaseRowsAbove(y + 1);
                 y--;
 
-                playerModel.AddScore(currentScore);
+                GameManager.Instance.PlayerModel.AddScore(currentScore);
 
                 exp *= 2;
             }

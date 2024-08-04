@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class PlayerModel
 {
@@ -10,6 +11,10 @@ public class PlayerModel
     private int time;
     private int score;
 
+
+    //
+    private Sprite nextBlockImg;
+
     public static event Action OnDataChanged;
 
 
@@ -17,8 +22,10 @@ public class PlayerModel
     {
         isEnd = true;
         userId = Environment.UserName;
-        time = 100;
+        time = 150;
         score = 0;
+
+        nextBlockImg = null;
     }
 
     //define
@@ -59,6 +66,19 @@ public class PlayerModel
         }
     }
 
+    public Sprite NextBlockImg
+    {
+        get => nextBlockImg;
+        set
+        {
+            if (nextBlockImg != value)
+            {
+                nextBlockImg = value;
+                OnDataChanged?.Invoke(); 
+            }
+        }
+    }
+
     //funt
     public void AddScore(int points)
     {
@@ -68,5 +88,10 @@ public class PlayerModel
     public void DecreaseTime()
     {
         Time -= 1;
+    }
+
+    public void ChangeNextBlockImg(Sprite sprite)
+    {
+        NextBlockImg = sprite;
     }
 }

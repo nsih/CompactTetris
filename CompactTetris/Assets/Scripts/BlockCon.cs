@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class BlockCon : MonoBehaviour
-{
+{    
     GameObject grid;
     GameObject blockHolder;
 
@@ -79,6 +79,9 @@ public class BlockCon : MonoBehaviour
 
             nextBlock = Instantiate(blockData.Shape, spawnPosition, spawnRotation);
 
+            //UI
+            GameManager.Instance.PlayerModel.ChangeNextBlockImg(blockData.BlockSprite);
+
             
             int cnt = nextBlock.transform.childCount;
             for (int i = cnt - 1; i >= 0; i--)
@@ -86,9 +89,6 @@ public class BlockCon : MonoBehaviour
                 Transform child = nextBlock.transform.GetChild(i);
                 child.GetComponent<SpriteRenderer>().color = blockData.RandomColor;
             }
-
-            //UI
-            //nextBlock.GetComponent<SpriteRenderer>().sprite = blockData.BlockSprite;
 
             nextBlock.transform.SetParent(blockHolder.transform);
             nextBlock.name = "NextBlock";
