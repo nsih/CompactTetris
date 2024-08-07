@@ -24,7 +24,7 @@ public class PlayView : MonoBehaviour
 
 
         //event subscribe
-        PlayerModel.OnDataChanged += UpdateView;
+        PlayerModel.OnPlayerDataChanged += UpdateView;
 
         //init
         UpdateView();
@@ -36,5 +36,10 @@ public class PlayView : MonoBehaviour
         timerText.text = "Time  : "+playerModel.Time.ToString()+ "Sec";
 
         nextBlockImg.GetComponent<Image>().sprite = playerModel.NextBlockImg;
+    }
+
+    public void UpdateOpponentData()
+    {
+        
     }
 }

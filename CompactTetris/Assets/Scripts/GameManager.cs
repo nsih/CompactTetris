@@ -20,6 +20,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private OpponentModel opponentModel;
+    public OpponentModel OpponentModel
+    {
+        get
+        {
+            if (playerModel == null)
+            {
+                Debug.LogError("PlayerModel instance not exist");
+            }
+            return OpponentModel;
+        }
+    }
+
 
     private void Awake()
     {
@@ -28,6 +41,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             playerModel = new PlayerModel();
+            opponentModel = new OpponentModel();
         }
         else
         {

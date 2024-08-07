@@ -4,28 +4,23 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 
-public class PlayerModel
+public class OpponentModel : MonoBehaviour
 {
     private bool isEnd;
     private string userId;
     private int time;
     private int score;
 
-
     //
-    private Sprite nextBlockImg;
-
-    public static event Action OnPlayerDataChanged;
+    public static event Action OnOpponentDataChanged;
 
 
-    public PlayerModel()
+    public OpponentModel()
     {
-        isEnd = true;
-        userId = Environment.UserName;
-        time = 100;
+        isEnd = false;
+        userId = "Unknown";
+        time = 0;
         score = 0;
-
-        nextBlockImg = null;
     }
 
     //define
@@ -37,7 +32,7 @@ public class PlayerModel
             if (userId != value)
             {
                 userId = value;
-                OnPlayerDataChanged?.Invoke(); // 데이터 변경을 알림
+                OnOpponentDataChanged?.Invoke(); // 데이터 변경을 알림
             }
         }
     }
@@ -49,7 +44,7 @@ public class PlayerModel
             if (score != value)
             {
                 score = value;
-                OnPlayerDataChanged?.Invoke();
+                OnOpponentDataChanged?.Invoke();
             }
         }
     }
@@ -61,11 +56,10 @@ public class PlayerModel
             if(time != value)
             {
                 time = value;
-                OnPlayerDataChanged?.Invoke();
+                OnOpponentDataChanged?.Invoke();
             }
         }
     }
-
     public bool IsEnd
     {
         get => isEnd;
@@ -74,36 +68,8 @@ public class PlayerModel
             if(isEnd != value)
             {
                 isEnd = value;
-                OnPlayerDataChanged?.Invoke();
+                OnOpponentDataChanged?.Invoke();
             }
         }
-    }
-    public Sprite NextBlockImg
-    {
-        get => nextBlockImg;
-        set
-        {
-            if (nextBlockImg != value)
-            {
-                nextBlockImg = value;
-                OnPlayerDataChanged?.Invoke(); 
-            }
-        }
-    }
-
-    //funt
-    public void AddScore(int points)
-    {
-        Score += points;
-    }
-
-    public void DecreaseTime()
-    {
-        Time -= 1;
-    }
-
-    public void ChangeNextBlockImg(Sprite sprite)
-    {
-        NextBlockImg = sprite;
     }
 }
