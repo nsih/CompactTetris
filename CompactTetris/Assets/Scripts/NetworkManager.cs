@@ -17,14 +17,16 @@ public class NetworkManager : MonoBehaviour
     public class GameState
     {
         public string playerId;
+        public string opponentId;
         public int time;
         public int score;
         public bool gameOver;
         public string imageUrl;
 
-        public GameState(string playerId,int time, int score, bool gameOver, string imageUrl)
+        public GameState(string playerId,string opponentId,int time, int score, bool gameOver, string imageUrl)
         {
             this.playerId = playerId;
+            this.opponentId = opponentId;
             this.time = time;
             this.score = score;
             this.gameOver = gameOver;
@@ -36,41 +38,11 @@ public class NetworkManager : MonoBehaviour
     void Start()
     {
         playerModel = GameManager.Instance.PlayerModel;
-        
-        GETReqTemp();
+
+        POSTReq();
     }
 
     #region 'GET'
-    void GETReqTemp()
-    {
-        string playerId = playerModel.UserId;
-        StartCoroutine(GetGameStatetemp());
-    }
-
-    // GET 요청을 보내는 코루틴
-    IEnumerator GetGameStatetemp()
-    {
-        // UnityWebRequest GET 요청 생성
-        UnityWebRequest request = UnityWebRequest.Get(uri);
-
-        // 요청을 보내고 응답을 기다림
-        yield return request.SendWebRequest();
-
-        // 응답 확인
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            Debug.Log("GameState retrieved");
-            string jsonResponse = request.downloadHandler.text;
-            //playerModel.
-            Debug.Log(jsonResponse);
-        }
-        else
-        {
-            Debug.LogError("Error: " + request.error);
-        }
-    }
-
-
 
     void GETReq()
     {
@@ -118,6 +90,7 @@ public class NetworkManager : MonoBehaviour
         //player id
         GameState gameState = new GameState(
             playerModel.UserId, 
+            null,
             playerModel.Time, 
             playerModel.Score,
             playerModel.IsEnd, 
@@ -140,6 +113,10 @@ public class NetworkManager : MonoBehaviour
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
+
+        
+        Debug.Log(uri + "save");
+        Debug.Log(jsonData);
 
         // wait response
         yield return request.SendWebRequest();
