@@ -10,7 +10,7 @@ public class NetworkManager : MonoBehaviour
 {
     public PlayerModel playerModel;
 
-    private string uri = "http://192.168.35.195:8080/";
+    private string uri = "http://192.168.35.58:8080/";
 
 
     [System.Serializable]
@@ -44,7 +44,7 @@ public class NetworkManager : MonoBehaviour
 
     #region 'GET'
 
-    void GETReq()
+    public void GETReq()
     {
         string playerId = playerModel.UserId;
         StartCoroutine(GetGameState(playerId));
@@ -85,7 +85,7 @@ public class NetworkManager : MonoBehaviour
     #endregion
 
     #region 'POST'
-    void POSTReq()
+    public void POSTReq()
     {
         //player id
         GameState gameState = new GameState(
@@ -115,8 +115,8 @@ public class NetworkManager : MonoBehaviour
         request.SetRequestHeader("Content-Type", "application/json");
 
         
-        Debug.Log(uri + "save");
-        Debug.Log(jsonData);
+        //Debug.Log(uri + "save");
+        //Debug.Log(jsonData);
 
         // wait response
         yield return request.SendWebRequest();
@@ -136,7 +136,7 @@ public class NetworkManager : MonoBehaviour
 
 
     // 매칭 대기 요청
-    void POSTJoinMatchmaking()
+    void JoinMatchmakingReq()
     {
         StartCoroutine(JoinMatchmaking(playerModel.UserId));
     }
@@ -165,8 +165,7 @@ public class NetworkManager : MonoBehaviour
     {
         StartCoroutine(StartMatch());
     }
-
-
+    
     //상대방 id뱉기
     IEnumerator StartMatch()
     {
