@@ -1,4 +1,3 @@
-repository "CompactTetrisCloud@sih@cloud"
+rep "CompactTetrisCloud@sih@cloud"
   path "/"
-    smartbranch "/main" changeset "14"                         
-     
+    smartbranch "/main"

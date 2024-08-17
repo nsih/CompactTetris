@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,10 +30,22 @@ public class GameManager : MonoBehaviour
             {
                 Debug.LogError("PlayerModel instance not exist");
             }
-            return OpponentModel;
+            return opponentModel;
         }
     }
 
+    private NetworkStateModel networkStateModel;
+    public NetworkStateModel NetworkStateModel
+    {
+        get
+        {
+            if (networkStateModel == null) 
+            {
+                Debug.LogError("Network State Model instance not exist");
+            }
+            return networkStateModel;
+        }
+    }
 
     private void Awake()
     {
@@ -42,6 +55,7 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             playerModel = new PlayerModel();
             opponentModel = new OpponentModel();
+            networkStateModel = new NetworkStateModel();
         }
         else
         {
@@ -49,31 +63,65 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-    private void Start()
+    void Start()
     {
-        StartCoroutine(TimeControlCoroutine());
+        PlayerModel.OnPlayerDataChanged += GameOver;
+
+        playerModel.IsPlay = false;
+        Time.timeScale = 0f;
+
+        //Debug.Log(networkStateModel.NetworkState);
+    }
+
+    public void SwitchTime()
+    {
+        if (!playerModel.IsPlay)
+        {
+            Time.timeScale = 1;
+            StartCoroutine(TimeControlCoroutine());
+
+            Debug.Log("Time Switch On");
+        }
+            
+        else
+        {
+            Time.timeScale = 0;
+            StopCoroutine(TimeControlCoroutine());
+
+            Debug.Log("Time Switch Off");
+        }
     }
 
     // 코루틴으로 시간 감소
     private IEnumerator TimeControlCoroutine()
     {
-        while (PlayerModel.Time > 0)
+        playerModel.IsPlay = true;
+
+        while (Time.timeScale > 0 && playerModel.IsPlay)
         {
             yield return new WaitForSeconds(1f); // 1초 대기
-            PlayerModel.DecreaseTime(); // 시간 감소
+            PlayerModel.DecreaseTime();
+
+            if (opponentModel.UserId != null)
+            {
+                gameObject.GetComponent<NetworkManager>().GETReq();
+                gameObject.GetComponent<ScreenshotManager>().DoCapture();
+                gameObject.GetComponent<NetworkManager>().POSTReq();
+            }
         }
 
+        playerModel.IsPlay = false;
         GameOver();
     }
 
     private void GameOver()
     {
-        Time.timeScale = 0f;
-
-        //끝난상태 업데이트
-        //UI 띄우기
-        //API 호출
+        if(playerModel.IsPlay == false || opponentModel.IsPlay == false)
+        {
+            //끝난상태 업데이트
+            //UI 띄우기
+            //API 호출
+        }
     }
     
 }

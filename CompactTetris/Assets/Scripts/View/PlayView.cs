@@ -12,19 +12,44 @@ public class PlayView : MonoBehaviour
     public TMP_Text timerText;
 
     public PlayerModel playerModel;
+    public OpponentModel opponentModel;
+    public NetworkStateModel networkStateModel;
+
+
+    /////
+    public GameObject opponentImage;
+    public TMP_Text opponentId;
+    public TMP_Text opponentScore;
+
+    //
+    public TMP_Text gameState;
+
 
     void Start()
     {
         playerModel = GameManager.Instance.PlayerModel;
+        opponentModel = GameManager.Instance.OpponentModel;
+        networkStateModel = GameManager.Instance.NetworkStateModel;
 
+        //player
         scoreText = GameObject.Find("Score").GetComponent<TMP_Text>();
         timerText = GameObject.Find("Timer").GetComponent<TMP_Text>();
-
         nextBlockImg = GameObject.Find("NextBlock");
+
+        //opponent
+        opponentImage = GameObject.Find("OpponentImage");   
+        opponentId = GameObject.Find("MatchState").GetComponent<TMP_Text>();
+        opponentScore = GameObject.Find("MatchState").GetComponent<TMP_Text>();
+
+        //state
+        gameState = GameObject.Find("GameState").GetComponent<TMP_Text>();
+
 
 
         //event subscribe
         PlayerModel.OnPlayerDataChanged += UpdateView;
+        OpponentModel.OnOpponentDataChanged += UpdateOpponentView;
+        NetworkStateModel.OnNetworkStateChanged += UpdateStateView;
 
         //init
         UpdateView();
@@ -38,8 +63,36 @@ public class PlayView : MonoBehaviour
         nextBlockImg.GetComponent<Image>().sprite = playerModel.NextBlockImg;
     }
 
-    public void UpdateOpponentData()
+    public void UpdateOpponentView()
     {
         
+        if(opponentModel.UserId == null)
+        {
+            opponentImage.GetComponent<Image>().sprite = null;
+            opponentId.text = "not matched";
+            opponentScore.text = "";
+        }
+        else
+        {
+            //opponentImage.GetComponent<Image>().sprite = this.gameObject.GetComponent<ScreenshotManager>().decriptCapture(opponentModel.GameSceneImg.ToString());
+            opponentId.text = opponentModel.UserId.ToString();
+            opponentScore.text = opponentModel.Score.ToString();
+        }
+    }
+
+    public void UpdateStateView()
+    {
+        if(networkStateModel.NetworkState == NetworkState.Single)
+        {
+            gameState.text = "Single";
+        }
+        else if(networkStateModel.NetworkState == NetworkState.Matching)
+        {
+            gameState.text = "Matching";
+        }
+        else if(networkStateModel.NetworkState == NetworkState.Matched)
+        {
+            gameState.text = "Match Start";
+        }
     }
 }

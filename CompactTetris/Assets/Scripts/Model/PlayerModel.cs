@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class PlayerModel
 {
-    private bool isEnd;
+    private bool isPlay;
     private string userId;
     private int time;
     private int score;
@@ -15,17 +15,21 @@ public class PlayerModel
     //
     private Sprite nextBlockImg;
 
+    private string gameSceneImg;
+
     public static event Action OnPlayerDataChanged;
 
 
     public PlayerModel()
     {
-        isEnd = true;
+        isPlay = true;
         userId = Environment.UserName;
         time = 100;
         score = 0;
 
         nextBlockImg = null;
+
+        gameSceneImg = null;
     }
 
     //define
@@ -66,14 +70,14 @@ public class PlayerModel
         }
     }
 
-    public bool IsEnd
+    public bool IsPlay
     {
-        get => isEnd;
+        get => isPlay;
         set
         {
-            if(isEnd != value)
+            if(isPlay != value)
             {
-                isEnd = value;
+                isPlay = value;
                 OnPlayerDataChanged?.Invoke();
             }
         }
@@ -86,6 +90,19 @@ public class PlayerModel
             if (nextBlockImg != value)
             {
                 nextBlockImg = value;
+                OnPlayerDataChanged?.Invoke(); 
+            }
+        }
+    }
+
+    public string GameSceneImg
+    {
+        get => gameSceneImg;
+        set
+        {
+            if (gameSceneImg != value)
+            {
+                gameSceneImg = value;
                 OnPlayerDataChanged?.Invoke(); 
             }
         }

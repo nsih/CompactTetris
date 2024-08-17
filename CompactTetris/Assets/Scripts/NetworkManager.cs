@@ -8,29 +8,37 @@ using System.IO;
 
 public class NetworkManager : MonoBehaviour
 {
+    public delegate void MatchFoundHandler(string opponentId);
+    public static event MatchFoundHandler OnMatchFound;
+
+
     public PlayerModel playerModel;
+    public OpponentModel opponentModel;
+    public NetworkStateModel networkStateModel;
 
     private string uri = "http://192.168.35.58:8080/";
 
+    //192.168.35.58
+
+    //http://192.168.35.58:8080/
+    //172.29.34.195
 
     [System.Serializable]
     public class GameState
     {
         public string playerId;
-        public string opponentId;
         public int time;
         public int score;
-        public bool gameOver;
-        public string imageUrl;
+        public bool isPlay;
+        public string gameSceneImg;
 
-        public GameState(string playerId,string opponentId,int time, int score, bool gameOver, string imageUrl)
+        public GameState(string playerId,int time, int score, bool isPlay, string gameSceneImg)
         {
             this.playerId = playerId;
-            this.opponentId = opponentId;
             this.time = time;
             this.score = score;
-            this.gameOver = gameOver;
-            this.imageUrl = imageUrl;
+            this.isPlay = isPlay;
+            this.gameSceneImg = gameSceneImg;
         }
     }
 
@@ -38,50 +46,44 @@ public class NetworkManager : MonoBehaviour
     void Start()
     {
         playerModel = GameManager.Instance.PlayerModel;
-
-        POSTReq();
+        opponentModel = GameManager.Instance.OpponentModel;
+        networkStateModel = GameManager.Instance.NetworkStateModel;
     }
 
     #region 'GET'
 
+    //상대 정보 받아오기
     public void GETReq()
     {
-        string playerId = playerModel.UserId;
-        StartCoroutine(GetGameState(playerId));
+        StartCoroutine(GetGameState(opponentModel.UserId));
     }
 
     // GET 요청을 보내는 코루틴
     IEnumerator GetGameState(string playerId)
     {
-        // UnityWebRequest GET 요청 생성
-        UnityWebRequest request = UnityWebRequest.Get(uri + "state" + playerId);
-
-        // 요청을 보내고 응답을 기다림
+        Debug.Log(playerId);
+        // GET 요청 생성후 응답대기
+        UnityWebRequest request = UnityWebRequest.Get(uri + "state/" + playerId);
         yield return request.SendWebRequest();
 
-        // 응답 확인
+        //
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("GameState retrieved");
+            Debug.Log("Get Opponent Complete");
             string jsonResponse = request.downloadHandler.text;
-
-            // JSON 응답을 GameState 객체로 변환
+            
             GameState gameState = JsonConvert.DeserializeObject<GameState>(jsonResponse);
 
 
-            //playerModel.
-
-            Debug.Log("Player ID: " + gameState.playerId);
-            Debug.Log("Score: " + gameState.score);
-            Debug.Log("Game Over: " + gameState.gameOver);
-            Debug.Log("Image URL: " + gameState.imageUrl);
+            //opponentModel update
+            opponentModel.UserId = gameState.playerId;
+            opponentModel.Score = gameState.score;
+            opponentModel.IsPlay = gameState.isPlay;
+            opponentModel.GameSceneImg = gameState.gameSceneImg;
         }
         else
-        {
             Debug.LogError("Error: " + request.error);
-        }
-    }
-    
+    }    
     #endregion
 
     #region 'POST'
@@ -89,14 +91,14 @@ public class NetworkManager : MonoBehaviour
     {
         //player id
         GameState gameState = new GameState(
-            playerModel.UserId, 
-            null,
+            playerModel.UserId,
             playerModel.Time, 
             playerModel.Score,
-            playerModel.IsEnd, 
-            "https://example.com/image.png"
+            playerModel.IsPlay, 
+            playerModel.GameSceneImg
             );
 
+        Debug.Log(playerModel.UserId);
         StartCoroutine(POSTGameState(gameState));
     }
 
@@ -124,7 +126,7 @@ public class NetworkManager : MonoBehaviour
         // debug
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("GameState POSTED");
+            //Debug.Log("GameState POSTED");
             Debug.Log("Response: " + request.downloadHandler.text);
         }
         else
@@ -136,7 +138,7 @@ public class NetworkManager : MonoBehaviour
 
 
     // 매칭 대기 요청
-    void JoinMatchmakingReq()
+    public void JoinMatchmakingReq()
     {
         StartCoroutine(JoinMatchmaking(playerModel.UserId));
     }
@@ -151,39 +153,54 @@ public class NetworkManager : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("Player added to matchmaking queue");
-            Debug.Log("Response: " + request.downloadHandler.text);
+            networkStateModel.NetworkState = NetworkState.Matching;
+            StartCoroutine(WaitForMatch());
         }
         else
         {
+            networkStateModel.NetworkState = NetworkState.Single;
             Debug.LogError("Error: " + request.error);
         }
     }
 
-    // 매칭 시작 요청
-    void POSTStartMatch()
+
+    public void WaitForMatchReq()
     {
-        StartCoroutine(StartMatch());
+        StartCoroutine(WaitForMatch());
     }
-    
-    //상대방 id뱉기
-    IEnumerator StartMatch()
+
+    IEnumerator WaitForMatch()
     {
-        UnityWebRequest request = new UnityWebRequest(uri + "start-match", "POST");
+        UnityWebRequest request = UnityWebRequest.Get(uri + "matchmaking-status?playerId=" + playerModel.UserId);
         request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Content-Type", "text/plain");
 
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("Match started");
-            Debug.Log("Response: " + request.downloadHandler.text);
+            string opponentId = request.downloadHandler.text;
+
+            if (!string.IsNullOrEmpty(opponentId))
+            {
+                Debug.Log("Match found! Opponent ID: " + opponentId);
+                opponentModel.UserId = opponentId;
+                networkStateModel.NetworkState = NetworkState.Matched;
+            }
+            else
+            {
+                Debug.Log("Still waiting for opponent...");
+            }
         }
         else
         {
-            Debug.LogError("Error: " + request.error);
+            Debug.Log("Error: " + request.error);
         }
+
+        Debug.Log("WaitForMatch Cycle Complete");
+
+        yield return new WaitForSeconds(1f);
     }
+
     #endregion
 }

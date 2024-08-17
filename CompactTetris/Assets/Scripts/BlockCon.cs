@@ -29,6 +29,8 @@ public class BlockCon : MonoBehaviour
 
         spawnPosition = new Vector3(4, 17, 0);
         spawnRotation = Quaternion.identity;
+
+
         SpawnBlock();
     }
 

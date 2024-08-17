@@ -4,12 +4,15 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 
-public class OpponentModel : MonoBehaviour
+[System.Serializable]
+public class OpponentModel
 {
-    private bool isEnd;
+    private bool isPlay;
     private string userId;
     private int time;
     private int score;
+
+    private string gameSceneImg;
 
     //
     public static event Action OnOpponentDataChanged;
@@ -17,10 +20,11 @@ public class OpponentModel : MonoBehaviour
 
     public OpponentModel()
     {
-        isEnd = false;
-        userId = "Unknown";
+        isPlay = true;
+        userId = null;
         time = 0;
         score = 0;
+        gameSceneImg = null;
     }
 
     //define
@@ -32,7 +36,7 @@ public class OpponentModel : MonoBehaviour
             if (userId != value)
             {
                 userId = value;
-                OnOpponentDataChanged?.Invoke(); // 데이터 변경을 알림
+                OnOpponentDataChanged?.Invoke();
             }
         }
     }
@@ -60,15 +64,28 @@ public class OpponentModel : MonoBehaviour
             }
         }
     }
-    public bool IsEnd
+    public bool IsPlay
     {
-        get => isEnd;
+        get => isPlay;
         set
         {
-            if(isEnd != value)
+            if(isPlay != value)
             {
-                isEnd = value;
+                isPlay = value;
                 OnOpponentDataChanged?.Invoke();
+            }
+        }
+    }
+
+    public string GameSceneImg
+    {
+        get => gameSceneImg;
+        set
+        {
+            if (gameSceneImg != value)
+            {
+                gameSceneImg = value;
+                OnOpponentDataChanged?.Invoke(); 
             }
         }
     }
