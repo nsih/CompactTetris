@@ -25,6 +25,10 @@ public class PlayView : MonoBehaviour
     public TMP_Text gameState;
 
 
+
+    public Sprite CaptureImg;
+
+
     void Start()
     {
         playerModel = GameManager.Instance.PlayerModel;
@@ -39,7 +43,7 @@ public class PlayView : MonoBehaviour
         //opponent
         opponentImage = GameObject.Find("OpponentImage");   
         opponentId = GameObject.Find("MatchState").GetComponent<TMP_Text>();
-        opponentScore = GameObject.Find("MatchState").GetComponent<TMP_Text>();
+        opponentScore = GameObject.Find("EnemyScore").GetComponent<TMP_Text>();
 
         //state
         gameState = GameObject.Find("GameState").GetComponent<TMP_Text>();
@@ -61,11 +65,12 @@ public class PlayView : MonoBehaviour
         timerText.text = "Time  : "+playerModel.Time.ToString()+ "Sec";
 
         nextBlockImg.GetComponent<Image>().sprite = playerModel.NextBlockImg;
+
+        Debug.Log("Update View");
     }
 
     public void UpdateOpponentView()
     {
-        
         if(opponentModel.UserId == null)
         {
             opponentImage.GetComponent<Image>().sprite = null;
@@ -74,9 +79,21 @@ public class PlayView : MonoBehaviour
         }
         else
         {
-            //opponentImage.GetComponent<Image>().sprite = this.gameObject.GetComponent<ScreenshotManager>().decriptCapture(opponentModel.GameSceneImg.ToString());
-            opponentId.text = opponentModel.UserId.ToString();
-            opponentScore.text = opponentModel.Score.ToString();
+            if (opponentModel.GameSceneImg != null)
+            {
+                CaptureImg = gameObject.GetComponent<ScreenshotManager>().decriptCapture(opponentModel.GameSceneImg.ToString());
+                opponentImage.GetComponent<Image>().sprite = CaptureImg;
+
+                Debug.Log(opponentModel.GameSceneImg);
+            }
+            else
+            {
+                Debug.Log("opponentModel.GameSceneImg == null");
+            }
+            opponentId.text = "Matched : " + opponentModel.UserId.ToString();
+            opponentScore.text = "Score : " + opponentModel.Score.ToString();
+
+            Debug.Log("Update OpponentView");
         }
     }
 

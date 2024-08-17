@@ -104,9 +104,11 @@ public class GameManager : MonoBehaviour
 
             if (opponentModel.UserId != null)
             {
-                gameObject.GetComponent<NetworkManager>().GETReq();
                 gameObject.GetComponent<ScreenshotManager>().DoCapture();
+                
                 gameObject.GetComponent<NetworkManager>().POSTReq();
+
+                gameObject.GetComponent<NetworkManager>().GETReq();
             }
         }
 

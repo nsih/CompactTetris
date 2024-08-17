@@ -20,21 +20,23 @@ public class ScreenshotManager : MonoBehaviour
     {
         // 스크린샷 캡처
         yield return new WaitForEndOfFrame();
-        Texture2D screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-        screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+
+        Debug.Log("Capture Start?");
+
+        Texture2D screenshot = new Texture2D(Screen.width / 3, Screen.height, TextureFormat.RGB24, false);
+        screenshot.ReadPixels(new Rect(Screen.width / 3, 0, Screen.width / 3, Screen.height), 0, 0);
+
         screenshot.Apply();
 
         // 텍스처를 PNG로 인코딩
         byte[] imageData = screenshot.EncodeToPNG();
-
         // Base64로 인코딩
         string base64Image = System.Convert.ToBase64String(imageData);
 
-        // 필요시, 텍스처 메모리 해제
         Destroy(screenshot);
-
-        // 
+        
         playerModel.GameSceneImg = base64Image;
+        Debug.Log("Capture Update?");
     }
 
     public Sprite decriptCapture(string img)

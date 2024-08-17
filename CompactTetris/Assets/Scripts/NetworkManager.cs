@@ -27,10 +27,11 @@ public class NetworkManager : MonoBehaviour
     public class GameState
     {
         public string playerId;
+        public string opponentId;
         public int time;
         public int score;
-        public bool isPlay;
         public string gameSceneImg;
+        public bool isPlay;
 
         public GameState(string playerId,int time, int score, bool isPlay, string gameSceneImg)
         {
@@ -61,7 +62,6 @@ public class NetworkManager : MonoBehaviour
     // GET 요청을 보내는 코루틴
     IEnumerator GetGameState(string playerId)
     {
-        Debug.Log(playerId);
         // GET 요청 생성후 응답대기
         UnityWebRequest request = UnityWebRequest.Get(uri + "state/" + playerId);
         yield return request.SendWebRequest();
@@ -69,17 +69,21 @@ public class NetworkManager : MonoBehaviour
         //
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log("Get Opponent Complete");
+            //Debug.Log("Get Opponent Complete");
             string jsonResponse = request.downloadHandler.text;
             
             GameState gameState = JsonConvert.DeserializeObject<GameState>(jsonResponse);
 
+            Debug.Log(jsonResponse);
 
             //opponentModel update
             opponentModel.UserId = gameState.playerId;
+            opponentModel.Time = gameState.time;
             opponentModel.Score = gameState.score;
             opponentModel.IsPlay = gameState.isPlay;
             opponentModel.GameSceneImg = gameState.gameSceneImg;
+
+            //Debug.Log(opponentModel.GameSceneImg);
         }
         else
             Debug.LogError("Error: " + request.error);
@@ -98,7 +102,7 @@ public class NetworkManager : MonoBehaviour
             playerModel.GameSceneImg
             );
 
-        Debug.Log(playerModel.UserId);
+        //Debug.Log(playerModel.UserId);
         StartCoroutine(POSTGameState(gameState));
     }
 
@@ -199,7 +203,7 @@ public class NetworkManager : MonoBehaviour
 
         Debug.Log("WaitForMatch Cycle Complete");
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
     }
 
     #endregion

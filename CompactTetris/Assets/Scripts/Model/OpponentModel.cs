@@ -82,11 +82,8 @@ public class OpponentModel
         get => gameSceneImg;
         set
         {
-            if (gameSceneImg != value)
-            {
-                gameSceneImg = value;
-                OnOpponentDataChanged?.Invoke(); 
-            }
+            gameSceneImg = value;
+            OnOpponentDataChanged?.Invoke();
         }
     }
 }
