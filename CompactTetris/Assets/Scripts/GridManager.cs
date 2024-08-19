@@ -11,13 +11,6 @@ public class GridManager : MonoBehaviour
 
     public static Transform[,] grid = new Transform[width, height];
 
-
-    void Start()
-    {
-    }
-
-
-
     public void InitializeGrid()
     {
         grid = new Transform[width, height];
@@ -73,7 +66,7 @@ public class GridManager : MonoBehaviour
         return true;
     }
 
-    // Tetris!
+    // Tetris thing
     public void DeleteRow(int y)
     {
         for (int x = 0; x < width; x++)
@@ -82,6 +75,11 @@ public class GridManager : MonoBehaviour
             grid[x, y] = null;
         }
     }
+
+
+
+
+    //
 
     public void DecreaseRow(int y)
     {

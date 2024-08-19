@@ -23,7 +23,7 @@ public class PlayView : MonoBehaviour
 
     //
     public TMP_Text gameState;
-
+    
 
 
     public Sprite CaptureImg;
@@ -48,8 +48,6 @@ public class PlayView : MonoBehaviour
         //state
         gameState = GameObject.Find("GameState").GetComponent<TMP_Text>();
 
-
-
         //event subscribe
         PlayerModel.OnPlayerDataChanged += UpdateView;
         OpponentModel.OnOpponentDataChanged += UpdateOpponentView;
@@ -66,7 +64,7 @@ public class PlayView : MonoBehaviour
 
         nextBlockImg.GetComponent<Image>().sprite = playerModel.NextBlockImg;
 
-        Debug.Log("Update View");
+        //Debug.Log("Update View");
     }
 
     public void UpdateOpponentView()

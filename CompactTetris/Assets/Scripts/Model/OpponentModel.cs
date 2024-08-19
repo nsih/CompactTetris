@@ -27,6 +27,15 @@ public class OpponentModel
         gameSceneImg = null;
     }
 
+    public void Init()
+    {
+        isPlay = false;
+        userId = null;
+        time = 0;
+        score = 0;
+        gameSceneImg = null;
+    }
+
     //define
     public String UserId
     {

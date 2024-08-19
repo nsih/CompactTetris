@@ -14,7 +14,9 @@ public class BtnStartCon : MonoBehaviour
     }
     public void OnClickAction()
     {
-        GameManager.Instance.SwitchTime();
+        GameManager.Instance.SwitchTime(true);
+
+        GameManager.Instance.blockHolder.GetComponent<BlockCon>().SpawnBlock();
     }
 
     public void BtnActivateSwitch()

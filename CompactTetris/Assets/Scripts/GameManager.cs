@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -47,6 +50,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //
+    public GameObject grid;
+    public GameObject blockHolder;
+
+    // 
+    public GameObject resultUI;
+    public TMP_Text wolResult;
+    public TMP_Text scoreResult;
+
     private void Awake()
     {
         if (Instance == null)
@@ -65,7 +77,17 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        PlayerModel.OnPlayerDataChanged += GameOver;
+        resultUI = GameObject.Find("Result");
+        wolResult = GameObject.Find("WoLResult").GetComponent<TMP_Text>();
+        scoreResult = GameObject.Find("ScoreResult").GetComponent<TMP_Text>();
+
+        resultUI.SetActive(false);
+
+        grid = GameObject.Find("Grid");
+        blockHolder = GameObject.Find("BlockHolder");
+
+        //PlayerModel.OnPlayerDataChanged += GameOver;
+        PlayerModel.OnPlayerDataChanged += Timer;
 
         playerModel.IsPlay = false;
         Time.timeScale = 0f;
@@ -73,9 +95,9 @@ public class GameManager : MonoBehaviour
         //Debug.Log(networkStateModel.NetworkState);
     }
 
-    public void SwitchTime()
+    public void SwitchTime(bool _switch)
     {
-        if (!playerModel.IsPlay)
+        if (_switch)
         {
             Time.timeScale = 1;
             StartCoroutine(TimeControlCoroutine());
@@ -92,6 +114,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void Timer()
+    {
+        if (playerModel.Time <= 0 )
+        {
+            playerModel.IsPlay = false;
+        }
+    }
+
     // 코루틴으로 시간 감소
     private IEnumerator TimeControlCoroutine()
     {
@@ -99,7 +129,7 @@ public class GameManager : MonoBehaviour
 
         while (Time.timeScale > 0 && playerModel.IsPlay)
         {
-            yield return new WaitForSeconds(1f); // 1초 대기
+            yield return new WaitForSeconds(2f); // 1초 대기
             PlayerModel.DecreaseTime();
 
             if (opponentModel.UserId != null)
@@ -116,13 +146,39 @@ public class GameManager : MonoBehaviour
         GameOver();
     }
 
-    private void GameOver()
+    public void GameOver()
     {
-        if(playerModel.IsPlay == false || opponentModel.IsPlay == false)
+        if(!playerModel.IsPlay)
         {
-            //끝난상태 업데이트
-            //UI 띄우기
-            //API 호출
+            blockHolder.GetComponent<BlockCon>().ClearGrid();
+            grid.SetActive(false);
+            
+            SwitchTime(false);
+
+            resultUI.SetActive(true);
+
+            if(opponentModel.UserId != null)
+            {
+                wolResult.gameObject.SetActive(true);
+                if(playerModel.Score > opponentModel.Score)
+                {
+                    wolResult.text = "You Win!!";
+                }
+                else if (playerModel.Score == opponentModel.Score)
+                {
+                    wolResult.text = "Draw";
+                }
+                else
+                {
+                    wolResult.text = "You Lose...";
+                }
+            }
+            else
+            {
+                wolResult.gameObject.SetActive(false);
+            }
+
+            scoreResult.text = "Score : "+ playerModel.Score;
         }
     }
     

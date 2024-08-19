@@ -32,6 +32,16 @@ public class PlayerModel
         gameSceneImg = null;
     }
 
+    public void Init()
+    {
+        isPlay = false;
+        userId = Environment.UserName;
+        time = 100;
+        score = 0;
+        nextBlockImg = null;
+        gameSceneImg = null;
+    }
+
     //define
     public String UserId
     {

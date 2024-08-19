@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 public class BlockCon : MonoBehaviour
 {    
+    public PlayerModel playerModel;
+
     GameObject grid;
     GameObject blockHolder;
 
@@ -20,6 +22,8 @@ public class BlockCon : MonoBehaviour
 
     void Start()
     {
+        playerModel = GameManager.Instance.PlayerModel;
+
         grid = GameObject.Find("Grid");
         blockHolder = GameObject.Find("BlockHolder");
         previousTime = Time.time;
@@ -29,9 +33,6 @@ public class BlockCon : MonoBehaviour
 
         spawnPosition = new Vector3(4, 17, 0);
         spawnRotation = Quaternion.identity;
-
-
-        SpawnBlock();
     }
 
     private void Update()
@@ -56,9 +57,14 @@ public class BlockCon : MonoBehaviour
         {
             Rotate();
         }
+
+        if (Time.time - previousTime > (Input.GetKeyDown(KeyCode.Space) ? fallTime / 10 : fallTime))
+        {
+            HardDrop();
+        }
     }
 
-    void SpawnBlock()
+    public void SpawnBlock()
     {
         if (nextBlock == null)
         {
@@ -126,6 +132,20 @@ public class BlockCon : MonoBehaviour
         }
     }
 
+    void HardDrop()
+    {
+        while (IsValidMove())
+        {
+            curBlock.transform.position += new Vector3(0, -1, 0);
+        }
+
+        curBlock.transform.position -= Vector3.down;
+        FixToGrid();
+        //enabled = false;
+        grid.GetComponent<GridManager>().DeleteFullRows();
+        SpawnBlock();
+    }
+
     void Rotate()
     {
         curBlock.transform.Rotate(0, 0, 90);
@@ -163,8 +183,23 @@ public class BlockCon : MonoBehaviour
         {
             //if(curBlock.transform.GetChild(i).name = "")
             Transform child = curBlock.transform.GetChild(i);
+
+            if (child.position.y >= 17)
+            {
+                playerModel.IsPlay = false;
+            }
+
+
             grid.GetComponent<GridManager>().AddToGrid(child);
             child.SetParent(blockHolder.transform);
+        }
+    }
+
+    public void ClearGrid()
+    {
+        foreach (Transform child in gameObject.transform)
+        {
+            Destroy(child.gameObject);
         }
     }
 

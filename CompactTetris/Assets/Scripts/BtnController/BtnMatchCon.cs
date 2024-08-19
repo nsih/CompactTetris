@@ -35,19 +35,21 @@ public class BtnMatchCon : MonoBehaviour
 
             yield return new WaitForSecondsRealtime(1f);
         }
-        GameManager.Instance.SwitchTime();
+        
+        GameManager.Instance.blockHolder.GetComponent<BlockCon>().SpawnBlock();
+        GameManager.Instance.SwitchTime(true);
     }
 
     public void BtnActivateSwitch()
     {
-        if(networkStateModel.NetworkState == NetworkState.Single || networkStateModel.NetworkState == NetworkState.Matching)
+        if(playerModel.IsPlay || networkStateModel.NetworkState == NetworkState.Matching)  
         {
-            this.gameObject.GetComponent<Button>().interactable = false;
+            gameObject.GetComponent<Button>().interactable = false;
         }
 
         else
         {
-            this.gameObject.GetComponent<Button>().interactable = true;
+            gameObject.GetComponent<Button>().interactable = true;
         }
     }
 }
