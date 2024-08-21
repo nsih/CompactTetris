@@ -58,7 +58,7 @@ public class BlockCon : MonoBehaviour
             Rotate();
         }
 
-        if (Time.time - previousTime > (Input.GetKeyDown(KeyCode.Space) ? fallTime / 10 : fallTime))
+        if ((Input.GetKeyDown(KeyCode.Space)))
         {
             HardDrop();
         }
