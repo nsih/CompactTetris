@@ -6,6 +6,7 @@ using System;
 
 public class GridManager : MonoBehaviour
 {
+    public GameObject particleHolder;
     public static int width = 10;
     public static int height = 20;
 
@@ -69,18 +70,25 @@ public class GridManager : MonoBehaviour
     // Tetris thing
     public void DeleteRow(int y)
     {
+        particleHolder = GameObject.Find("ParticleHolder");
+        GameObject block;
         for (int x = 0; x < width; x++)
         {
-            Destroy(grid[x, y].gameObject);
+            block = grid[x, y].gameObject;
+
+            for(int i = 0 ; i < 4 ; i++)
+            {
+                particleHolder.GetComponent<ParticleManager>().ParticleEffect(block);
+            }
+            
+
+            Destroy(block);
             grid[x, y] = null;
         }
     }
 
 
-
-
-    //
-
+    // 
     public void DecreaseRow(int y)
     {
         for (int x = 0; x < width; x++)
